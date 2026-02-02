@@ -1,8 +1,7 @@
 package com.example.newsapp; // CHANGE THIS TO YOUR PACKAGE NAME
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +22,6 @@ public class NewsDetailFragment extends Fragment {
     private ImageView imageView;
     private TextView sourceTv; // NEW: Source Name
     private TextView titleTv, authorTv, descTv, dateTv;
-    private Button readMoreBtn;
 
     // Holding variable for the data
     private NewsArticle pendingArticle;
@@ -48,7 +46,7 @@ public class NewsDetailFragment extends Fragment {
         authorTv = view.findViewById(R.id.detail_author);
         descTv = view.findViewById(R.id.detail_desc);
         dateTv = view.findViewById(R.id.detail_date);
-        readMoreBtn = view.findViewById(R.id.btn_read_more);
+        Button readMoreBtn = view.findViewById(R.id.btn_read_more);
 
         // Setup Read More Button (Optional: Open URL in Browser)
         readMoreBtn.setOnClickListener(v -> {
@@ -76,6 +74,7 @@ public class NewsDetailFragment extends Fragment {
     }
 
     // Helper method to actually set the text
+    @SuppressLint("SetTextI18n")
     private void updateUI(NewsArticle article) {
         // 2. Set the Source Name text
         sourceTv.setText(article.getSourceName());
@@ -87,7 +86,7 @@ public class NewsDetailFragment extends Fragment {
         if (authorText == null || authorText.equals("null") || authorText.isEmpty()) {
             authorTv.setText("Author: Unknown");
         } else {
-            authorTv.setText("Author: " + authorText);
+            authorTv.setText(String.format("Author: %s", authorText));
         }
 
         descTv.setText(article.getDescription());

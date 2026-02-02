@@ -1,5 +1,6 @@
 package com.example.newsapp; // CHANGE THIS TO YOUR PACKAGE NAME
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +17,9 @@ import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
 
-    private Context context;
-    private List<NewsArticle> articles;
-    private OnItemClickListener listener;
+    private final Context context;
+    private final List<NewsArticle> articles;
+    private final OnItemClickListener listener;
 
     // Interface to handle clicks
     public interface OnItemClickListener {
@@ -40,6 +41,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         return new NewsViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
         NewsArticle currentArticle = articles.get(position);

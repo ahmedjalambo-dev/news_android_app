@@ -102,9 +102,9 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
         menu.add(0, 2, 0, "Technology");
         menu.add(0, 3, 0, "Sports");
         menu.add(0, 4, 0, "Business");
-        menu.add(0, 4, 0, "Entertainment");
-        menu.add(0, 4, 0, "Science");
-        menu.add(0, 4, 0, "Health");
+        menu.add(0, 5, 0, "Entertainment");
+        menu.add(0, 6, 0, "Science");
+        menu.add(0, 7, 0, "Health");
 
         return true;
     }

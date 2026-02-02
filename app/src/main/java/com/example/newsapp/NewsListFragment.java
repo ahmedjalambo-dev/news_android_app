@@ -1,5 +1,6 @@
 package com.example.newsapp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -66,6 +67,7 @@ public class NewsListFragment extends Fragment {
         return view;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void updateData(List<NewsArticle> newArticles) {
         this.articles.clear();
         this.articles.addAll(newArticles);

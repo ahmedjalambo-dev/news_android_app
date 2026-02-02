@@ -1,7 +1,12 @@
 package com.example.newsapp; // CHANGE TO YOUR PACKAGE NAME
 
 public class NewsArticle {
-    private String title, author, description, urlToImage, publishedAt, sourceName;
+    private final String title;
+    private final String author;
+    private final String description;
+    private final String urlToImage;
+    private final String publishedAt;
+    private final String sourceName;
 
     public NewsArticle(String title, String author, String description, String urlToImage, String publishedAt, String sourceName) {
         this.title = title;
