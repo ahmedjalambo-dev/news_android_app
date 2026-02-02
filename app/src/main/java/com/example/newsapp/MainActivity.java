@@ -24,6 +24,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.newsapp.utils.NewsJsonParser;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -205,49 +206,22 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
             }
         }
 
+        // Inside FetchNewsTask
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             progressBar.setVisibility(View.GONE);
 
-            if (s == null) {
-                sendNotification("Error", "Failed to fetch news.");
-                return;
-            }
+            // 1. Delegate parsing to the helper class
+            List<NewsArticle> parsedArticles = NewsJsonParser.parse(s);
 
-            List<NewsArticle> parsedArticles = new ArrayList<>();
-            try {
-                // Manual JSON Parsing
-                JSONObject root = new JSONObject(s);
-                JSONArray articlesArray = root.getJSONArray("articles");
-
-                for (int i = 0; i < articlesArray.length(); i++) {
-                    JSONObject obj = articlesArray.getJSONObject(i);
-                    String title = obj.optString("title");
-                    String author = obj.optString("author");
-                    String desc = obj.optString("description");
-                    String imgUrl = obj.optString("urlToImage");
-                    String date = obj.optString("publishedAt");
-
-                    JSONObject sourceObj = obj.getJSONObject("source");
-                    String sourceName = sourceObj.optString("name");
-
-                    parsedArticles.add(new NewsArticle(title, author, desc, imgUrl, date, sourceName));
-                }
-
-                // Update List Fragment
+            // 2. Handle UI updates
+            if (parsedArticles.isEmpty()) {
+                sendNotification("Error", "No news found or parsing failed.");
+            } else {
                 listFragment.updateData(parsedArticles);
-
-                // Requirement: Default Tab 2 to first article
-                if (!parsedArticles.isEmpty()) {
-                    detailFragment.displayArticle(parsedArticles.get(0));
-                }
-
+                detailFragment.displayArticle(parsedArticles.get(0));
                 sendNotification("News Updated", "Loaded " + parsedArticles.size() + " articles.");
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-                sendNotification("Error", "Data parsing failed.");
             }
         }
     }
