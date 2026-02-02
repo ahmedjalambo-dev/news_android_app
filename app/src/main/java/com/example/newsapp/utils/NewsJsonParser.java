@@ -1,6 +1,6 @@
 package com.example.newsapp.utils;
 
-import com.example.newsapp.NewsArticle;
+import com.example.newsapp.models.NewsArticle;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

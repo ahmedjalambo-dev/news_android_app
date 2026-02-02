@@ -1,11 +1,7 @@
-package com.example.newsapp;
+package com.example.newsapp.ui;
 
 import android.Manifest;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,29 +13,22 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.newsapp.utils.NewsJsonParser;
+import com.example.newsapp.R;
+import com.example.newsapp.models.NewsArticle;
+import com.example.newsapp.networking.FetchNewsTask;
+import com.example.newsapp.utils.NotificationHelper;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NewsListFragment.OnArticleSelectedListener {
+public class MainActivity extends AppCompatActivity implements NewsListFragment.OnArticleSelectedListener, FetchNewsTask.Callback {
 
     private ViewPager2 viewPager;
     private TabLayout tabLayout;
@@ -67,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
             }
         }
         // Initial Load
-        new FetchNewsTask().execute(currentCategory);
+        new FetchNewsTask(this).execute(currentCategory);
     }
 
     private void setupViewPager() {
@@ -88,18 +77,18 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
         }).attach();
     }
 
-    // --- Interface Implementation ---
+    // Interface Implementation
     @Override
     public void onArticleSelected(NewsArticle article) {
-        // 1. Pass data to Tab 2
+        // Pass data to Tab 2
         detailFragment.displayArticle(article);
-        // 2. Switch to Tab 2
+        // Switch to Tab 2
         viewPager.setCurrentItem(1, true);
     }
 
     @Override
     public void onRefreshRequested() {
-        new FetchNewsTask().execute(currentCategory);
+        new FetchNewsTask(this).execute(currentCategory);
     }
 
     // --- Menu Handling ---
@@ -141,89 +130,35 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
                 currentCategory = "health";
                 break;
         }
-        new FetchNewsTask().execute(currentCategory);
+        new FetchNewsTask(this).execute(currentCategory);
 
-        // 1. Fetch the data (EXISTING LINE)
-        new FetchNewsTask().execute(currentCategory);
-
-        // 2. Update the Tab Text (NEW LINE)
+        // Fetch the data
+        new FetchNewsTask(this).execute(currentCategory);
+        // Update the Tab Text
         updateTabTitle(currentCategory);
         return super.onOptionsItemSelected(item);
     }
 
-    // --- Notifications ---
-    private void sendNotification(String title, String message) {
-        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        String channelId = "news_channel";
+    @Override
+    public void onNewsFetched(List<NewsArticle> articles) {
+        progressBar.setVisibility(View.GONE);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId, "News Updates", NotificationManager.IMPORTANCE_DEFAULT);
-            manager.createNotificationChannel(channel);
+        // Update the list
+        listFragment.updateData(articles);
+
+        // Update the detail view if needed
+        if (!articles.isEmpty()) {
+            detailFragment.displayArticle(articles.get(0));
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId).setSmallIcon(android.R.drawable.ic_dialog_info).setContentTitle(title).setContentText(message).setAutoCancel(true);
-
-        manager.notify(1, builder.build());
+        // Use the Helper from the previous step
+        NotificationHelper.show(this, "News Updated", "Loaded " + articles.size() + " articles.");
     }
 
-    // --- AsyncTask & Networking (The Strict Requirement) ---
-    @SuppressWarnings("deprecation") // Suppress warning for academic requirement
-    private class FetchNewsTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            String category = params[0];
-            // REPLACE THIS
-            String API_KEY = "1d0edd6ab88f49ea97abb01440082f90";
-            String urlString = "https://newsapi.org/v2/top-headlines?country=us&category=" + category + "&apiKey=" + API_KEY;
-            StringBuilder result = new StringBuilder();
-
-            try {
-                URL url = new URL(urlString);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("User-Agent", "Mozilla/5.0");
-                conn.setConnectTimeout(5000);
-
-                // Read response
-                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    result.append(line);
-                }
-                reader.close();
-                return result.toString();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        // Inside FetchNewsTask
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            progressBar.setVisibility(View.GONE);
-
-            // 1. Delegate parsing to the helper class
-            List<NewsArticle> parsedArticles = NewsJsonParser.parse(s);
-
-            // 2. Handle UI updates
-            if (parsedArticles.isEmpty()) {
-                sendNotification("Error", "No news found or parsing failed.");
-            } else {
-                listFragment.updateData(parsedArticles);
-                detailFragment.displayArticle(parsedArticles.get(0));
-                sendNotification("News Updated", "Loaded " + parsedArticles.size() + " articles.");
-            }
-        }
+    @Override
+    public void onError(String message) {
+        progressBar.setVisibility(View.GONE);
+        NotificationHelper.show(this, "Error", message);
     }
 
     // Simple ViewPager Adapter

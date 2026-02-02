@@ -1,4 +1,4 @@
-package com.example.newsapp; // CHANGE THIS TO YOUR PACKAGE NAME
+package com.example.newsapp.ui; // CHANGE THIS TO YOUR PACKAGE NAME
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -15,12 +15,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.example.newsapp.R;
+import com.example.newsapp.models.NewsArticle;
 
 public class NewsDetailFragment extends Fragment {
 
     // UI Components
     private ImageView imageView;
-    private TextView sourceTv; // NEW: Source Name
+    private TextView sourceTv;
     private TextView titleTv, authorTv, descTv, dateTv;
 
     // Holding variable for the data
@@ -41,14 +43,14 @@ public class NewsDetailFragment extends Fragment {
 
         // Bind Views
         imageView = view.findViewById(R.id.detail_image);
-        sourceTv = view.findViewById(R.id.detail_source_name); // 1. Bind new Source TextView
+        sourceTv = view.findViewById(R.id.detail_source_name);
         titleTv = view.findViewById(R.id.detail_title);
         authorTv = view.findViewById(R.id.detail_author);
         descTv = view.findViewById(R.id.detail_desc);
         dateTv = view.findViewById(R.id.detail_date);
         Button readMoreBtn = view.findViewById(R.id.btn_read_more);
 
-        // Setup Read More Button (Optional: Open URL in Browser)
+        // NOT IMPLEMENTED: Setup Read More Button (Open URL in Browser)
         readMoreBtn.setOnClickListener(v -> {
             // Note: Since you haven't added the URL to your NewsArticle class yet,
             // this button currently does nothing.
@@ -76,11 +78,8 @@ public class NewsDetailFragment extends Fragment {
     // Helper method to actually set the text
     @SuppressLint("SetTextI18n")
     private void updateUI(NewsArticle article) {
-        // 2. Set the Source Name text
         sourceTv.setText(article.getSourceName());
-
         titleTv.setText(article.getTitle());
-
         // Handle potential null author
         String authorText = article.getAuthor();
         if (authorText == null || authorText.equals("null") || authorText.isEmpty()) {

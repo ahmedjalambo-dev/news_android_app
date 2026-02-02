@@ -1,4 +1,4 @@
-package com.example.newsapp;
+package com.example.newsapp.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -14,13 +14,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.newsapp.R;
+import com.example.newsapp.adapters.NewsAdapter;
+import com.example.newsapp.models.NewsArticle;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class NewsListFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private NewsAdapter adapter;
-    private List<NewsArticle> articles = new ArrayList<>();
+    private final List<NewsArticle> articles = new ArrayList<>();
     private OnArticleSelectedListener listener;
 
     // Interface for Main Activity to listen to clicks
