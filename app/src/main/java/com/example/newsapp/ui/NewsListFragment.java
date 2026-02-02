@@ -1,6 +1,5 @@
 package com.example.newsapp.ui;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,6 +25,9 @@ public class NewsListFragment extends Fragment {
     private NewsAdapter adapter;
     private final List<NewsArticle> articles = new ArrayList<>();
     private OnArticleSelectedListener listener;
+
+    // Holds data that arrives before the view is ready
+    private List<NewsArticle> pendingArticles = null;
 
     // Interface for Main Activity to listen to clicks
     public interface OnArticleSelectedListener {
@@ -68,16 +70,27 @@ public class NewsListFragment extends Fragment {
             swipeRefreshLayout.setRefreshing(false); // Stop spinner immediately, let AsyncTask handle loading UI
         });
 
+        // CHECKPOINT: If data came in before the view was ready, load it now!
+        if (pendingArticles != null) {
+            adapter.updateData(pendingArticles);
+            pendingArticles = null;
+        }
+
         return view;
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    /**
+     * FIX: Use the adapter's updateData method which properly updates the adapter's internal list.
+     * The previous implementation updated the fragment's list but the adapter had its own copy,
+     * so the RecyclerView never showed any items.
+     */
     public void updateData(List<NewsArticle> newArticles) {
-        this.articles.clear();
-        this.articles.addAll(newArticles);
-        if (adapter != null) adapter.notifyDataSetChanged();
+        // Save data in case the view isn't ready yet
+        this.pendingArticles = newArticles;
+
+        // If the adapter is ready, update it directly
+        if (adapter != null) {
+            adapter.updateData(newArticles);
+        }
     }
-
-
-
 }
