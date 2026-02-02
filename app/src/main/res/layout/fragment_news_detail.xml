@@ -40,7 +40,7 @@
             android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:chipBackgroundColor="@color/state_list_primary_container"
+            app:chipBackgroundColor="@color/primary"
             app:chipMinHeight="32dp" />
 
         <TextView
