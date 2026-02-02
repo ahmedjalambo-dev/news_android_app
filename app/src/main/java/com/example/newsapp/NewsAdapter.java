@@ -17,9 +17,9 @@ import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
 
-    private final Context context;
-    private final List<NewsArticle> articles;
-    private final OnItemClickListener listener;
+    private Context context;
+    private List<NewsArticle> articles;
+    private OnItemClickListener listener;
 
     // Interface to handle clicks
     public interface OnItemClickListener {

@@ -20,7 +20,7 @@ import java.util.List;
 public class NewsListFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private NewsAdapter adapter;
-    private final List<NewsArticle> articles = new ArrayList<>();
+    private List<NewsArticle> articles = new ArrayList<>();
     private OnArticleSelectedListener listener;
 
     // Interface for Main Activity to listen to clicks
