@@ -123,10 +123,13 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
                 break;
             case 4:
                 currentCategory = "business";
+                break;
             case 5:
                 currentCategory = "entertainment";
+                break;
             case 6:
                 currentCategory = "science";
+                break;
             case 7:
                 currentCategory = "health";
                 break;
