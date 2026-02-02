@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">NEWS</string>
+    <string-array name="news_categories">
+        <item>General</item>
+        <item>Technology</item>
+        <item>Sports</item>
+        <item>Business</item>
+    </string-array>
 </resources>
