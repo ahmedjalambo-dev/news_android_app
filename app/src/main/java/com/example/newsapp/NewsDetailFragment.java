@@ -51,7 +51,6 @@ public class NewsDetailFragment extends Fragment {
         readMoreBtn = view.findViewById(R.id.btn_read_more);
 
         // Setup Read More Button (Optional: Open URL in Browser)
-        readMoreBtn.setBackgroundResource(R.drawable.custom_button_bg);
         readMoreBtn.setOnClickListener(v -> {
             // Note: Since you haven't added the URL to your NewsArticle class yet,
             // this button currently does nothing.

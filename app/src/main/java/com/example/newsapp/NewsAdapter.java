@@ -75,8 +75,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         // 5. Load Image using Glide
         Glide.with(context)
                 .load(currentArticle.getUrlToImage())
-                .placeholder(android.R.drawable.ic_menu_gallery) // Default placeholder
-                .error(android.R.drawable.ic_delete) // Error image
+                // Use your new modern vector icons here:
+                .placeholder(R.drawable.ic_image_placeholder)
+                .error(R.drawable.ic_broken_image)
                 .into(holder.thumbnailIv);
 
         // 6. Handle Click
