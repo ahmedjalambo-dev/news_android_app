@@ -77,7 +77,13 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
         viewPager.setAdapter(viewPagerAdapter);
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            tab.setText(position == 0 ? "Headlines" : "Details");
+            if (position == 0) {
+                // Dynamic title based on default category
+                String formatted = currentCategory.substring(0, 1).toUpperCase() + currentCategory.substring(1);
+                tab.setText(formatted + " Headlines");
+            } else {
+                tab.setText("Details");
+            }
         }).attach();
     }
 
@@ -135,6 +141,12 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
                 break;
         }
         new FetchNewsTask().execute(currentCategory);
+
+        // 1. Fetch the data (EXISTING LINE)
+        new FetchNewsTask().execute(currentCategory);
+
+        // 2. Update the Tab Text (NEW LINE)
+        updateTabTitle(currentCategory);
         return super.onOptionsItemSelected(item);
     }
 
@@ -269,5 +281,18 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
 
     public void setDetailFragment(NewsDetailFragment fragment) {
         this.detailFragment = fragment;
+    }
+
+    private void updateTabTitle(String category) {
+        // 1. Capitalize the first letter (e.g., "sports" -> "Sports")
+        String formattedCategory = category.substring(0, 1).toUpperCase() + category.substring(1);
+
+        // 2. Get the first tab (Index 0)
+        TabLayout.Tab tab = tabLayout.getTabAt(0);
+
+        // 3. Set the new text
+        if (tab != null) {
+            tab.setText(formattedCategory + " Headlines");
+        }
     }
 }
