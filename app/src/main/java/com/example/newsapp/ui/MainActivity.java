@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
             }
         }
         // Initial Load
-        new FetchNewsTask(this).execute(currentCategory);
+        fetchNews();
     }
 
     private void setupViewPager() {
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
 
     @Override
     public void onRefreshRequested() {
-        new FetchNewsTask(this).execute(currentCategory);
+        fetchNews();
     }
 
     // --- Menu Handling ---
@@ -130,17 +130,28 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
                 currentCategory = "health";
                 break;
         }
-        new FetchNewsTask(this).execute(currentCategory);
 
-        // Fetch the data
-        new FetchNewsTask(this).execute(currentCategory);
+        // Fetch the data (removed duplicate call that was here before)
+        fetchNews();
+
         // Update the Tab Text
         updateTabTitle(currentCategory);
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * FIX: Helper method that shows the progress bar before fetching news.
+     * This ensures the loading indicator is visible during network requests.
+     */
+    private void fetchNews() {
+        // Show progress bar BEFORE starting the async task
+        progressBar.setVisibility(View.VISIBLE);
+        new FetchNewsTask(this).execute(currentCategory);
+    }
+
     @Override
     public void onNewsFetched(List<NewsArticle> articles) {
+        // Hide progress bar after fetch completes
         progressBar.setVisibility(View.GONE);
 
         // Update the list
@@ -157,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements NewsListFragment.
 
     @Override
     public void onError(String message) {
+        // Hide progress bar on error too
         progressBar.setVisibility(View.GONE);
         NotificationHelper.show(this, "Error", message);
     }

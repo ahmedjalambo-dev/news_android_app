@@ -94,8 +94,8 @@ public class NewsDetailFragment extends Fragment {
         if (getContext() != null) {
             Glide.with(this)
                     .load(article.getUrlToImage())
-                    .placeholder(android.R.drawable.ic_menu_gallery)
-                    .error(android.R.drawable.ic_menu_report_image)
+                    .placeholder(R.drawable.ic_image_placeholder)
+                    .error(R.drawable.ic_broken_image)
                     .into(imageView);
         }
 
